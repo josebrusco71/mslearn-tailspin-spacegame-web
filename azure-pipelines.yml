@@ -6,10 +6,10 @@ variables:
   
 stages:
 - stage: 'Build'
-  displayName: 'Build the web application'
+  displayName: 'Compilar la App Web'
   jobs: 
   - job: 'Build'
-    displayName: 'Build job'
+    displayName: 'Trabajo de compilación'
     pool: default
       #vmImage: 'ubuntu-20.04'
       #demands:
@@ -20,12 +20,12 @@ stages:
 
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+      displayName: 'Usar .NET SDK $(dotnetSdkVersion)'
       inputs:
         version: '$(dotnetSdkVersion)'
 
     - task: Npm@1
-      displayName: 'Run npm install'
+      displayName: 'Ejecutar instalación npm'
       inputs:
         verbose: false
 
@@ -33,34 +33,34 @@ stages:
       displayName: 'Compile Sass assets'
 
     - task: gulp@1
-      displayName: 'Run gulp tasks'
+      displayName: 'Ejecutar tareas gulp'
 
     - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
       displayName: 'Write build info'
       workingDirectory: $(wwwrootDir)
 
     - task: DotNetCoreCLI@2
-      displayName: 'Restore project dependencies'
+      displayName: 'Restaurar dependencias del proyecto'
       inputs:
         command: 'restore'
         projects: '**/*.csproj'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Build the project - $(buildConfiguration)'
+      displayName: 'Compilar el proyecto - $(buildConfiguration)'
       inputs:
         command: 'build'
         arguments: '--no-restore --configuration $(buildConfiguration)'
         projects: '**/*.csproj'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Install .NET Core tools from local manifest'
+      displayName: 'Instalar .NET Core tools desde local manifest'
       inputs:
         command: custom
         custom: tool
         arguments: 'restore'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Run unit tests - $(buildConfiguration)'
+      displayName: 'Ejecutar test unitario - $(buildConfiguration)'
       inputs:
         command: 'test'
         arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
@@ -68,20 +68,20 @@ stages:
         projects: '**/*.Tests.csproj'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Create code coverage report'
+      displayName: 'Crear code coverage report'
       inputs:
         command: custom
         custom: tool
         arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
 
     - task: PublishCodeCoverageResults@1
-      displayName: 'Publish code coverage report'
+      displayName: 'Publicar code coverage report'
       inputs:
         codeCoverageTool: 'cobertura'
         summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Publish the project - $(buildConfiguration)'
+      displayName: 'Publicar el proyecto - $(buildConfiguration)'
       inputs:
         command: 'publish'
         projects: '**/*.csproj'
@@ -94,7 +94,7 @@ stages:
       condition: succeeded()
   
 - stage: 'Deploy'
-  displayName: 'Deploy the web application'
+  displayName: 'Despliegue de la aplicación'
   dependsOn: Build
   jobs:
   - deployment: Deploy
