@@ -1,15 +1,22 @@
 trigger:
 - '*'
 
-pool: default
-  #vmImage: 'ubuntu-20.04'
-  #demands:
-  #- npm
-
 variables:
   buildConfiguration: 'Release'
-  wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
-  dotnetSdkVersion: '5.x'
+  
+Stages:
+-stage: 'Build'
+ displayName: 'Build the web application'
+ jobs: 
+ - job: 'Build'
+   displayName: 'Build job'
+   pool: default
+      #vmImage: 'ubuntu-20.04'
+      #demands:
+      #- npm
+   Variables:
+     wwwrootDir: 'Tailspin.SpaceGame.Web/wwwroot'
+     dotnetSdkVersion: '5.x'
 
 steps:
 - task: UseDotNet@2
@@ -85,7 +92,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   condition: succeeded()
-stages:
+  
 - stage: 'Deploy'
   displayName: 'Deploy the web application'
   dependsOn: Build
