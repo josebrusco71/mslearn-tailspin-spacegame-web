@@ -86,6 +86,7 @@ steps:
   displayName: 'Publish Artifact: drop'
   condition: succeeded()
 
+stages:
 - stage: 'Deploy'
   displayName: 'Deploy the web application'
   dependsOn: Build
