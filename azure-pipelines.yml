@@ -85,7 +85,6 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   condition: succeeded()
-
 stages:
 - stage: 'Deploy'
   displayName: 'Deploy the web application'
